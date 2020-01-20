@@ -1,0 +1,135 @@
+.common-editable-table {
+    width: 100%;
+    max-width: 100%;
+    height: calc(100% - 16px);
+    float: left;
+    // border: 1px solid #dadada;
+    border-radius: '4px';
+    background: rgba(240, 243, 248, 1);
+  
+    .ant-spin-nested-loading {
+      height: 100%;
+  
+      .ant-spin-container {
+        height: 100%;
+  
+        .ant-table {
+          height: 100%;
+  
+          .ant-table-content {
+            height: 100%;
+  
+            .ant-table-scroll {
+              height: 100%;
+              overflow: hidden;
+  
+              // .ant-table-body {
+              //   max-height: calc(100% - 60px) !important;
+              //   height: calc(100% - 60px);
+              // }
+            }
+          }
+        }
+      }
+    }
+  
+    .ant-table-fixed {
+      table-layout: fixed;
+    }
+  
+    .ant-table-header {
+      overflow: hidden !important;
+      margin-right: 17px;
+      background-color: #f0f3f8 !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  
+    .ant-table-thead {
+      border-bottom: 1px solid #fff;
+  
+      tr {
+        th, td, span, div {
+          overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
+        }
+        th {
+          padding: 0 !important;
+          .table-thead-title{
+            line-height: 40px;padding: 0 8px;
+            input {
+              height: 24px;
+            }
+          }
+        }
+        span {
+          display: block;
+        }
+      }
+  
+      .editable-cell {
+        position: relative;
+      }
+  
+      .editable-cell-value-wrap {
+        cursor: pointer;
+        .ant-table-header-column {
+          width: 100%;
+        }
+      }
+  
+      .editable-row:hover .editable-cell-value-wrap {
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        padding: 4px 11px;
+      }
+  
+      // th.react-resizable {
+      //   padding: 0 !important;
+      // }
+    }
+  
+    .ant-table-tbody {
+      tr {
+  
+        td,
+        div {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+  
+        td {
+          padding: 0 !important;
+  
+          div.tabel-cell-content {
+            padding: 8px;height: 38px;
+          }
+        }
+      }
+      tr:last-child{
+        border-bottom: 1px solid #e8e8e8;
+      }
+    }
+  
+    .table-highlight {
+      background-color: #a3cef0 !important;
+    }
+  
+    .anticon {
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  
+    .table-header-icon {
+      width: 45px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+  
+    &.editing {
+      .ant-table-body {
+        max-height: calc(100% - 41px) !important;
+        height: calc(100% - 41px);
+      }
+    }
+  }
