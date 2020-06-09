@@ -1,35 +1,57 @@
-import React, { Component } from 'react';
-import logo from './asset/logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.less";
+import EditableTable from "./components/table";
 
-export type AppProps = {
-  // store: string
-}
+const Columns = [
+  {
+    title: "name",
+    dataIndex: "name",
+    width: 200,
+    editable: true,
+  },
+  {
+    title: "age",
+    dataIndex: "age",
+    width: 200,
+  },
+  {
+    title: "address",
+    dataIndex: "address",
+    width: 200,
+  },
+  {
+    title: "operation",
+    dataIndex: "operation",
+    render: (text, record) => <span>delete</span>,
+  },
+];
 
-interface AppStates {
+const DataSource = [
+  {
+    key: "0",
+    name: "Edward King 0",
+    age: "32",
+    address: "London, Park Lane no. 0",
+  },
+  {
+    key: "1",
+    name: "Edward King 1",
+    age: "32",
+    address: "London, Park Lane no. 1",
+  },
+];
 
-}
-
-export default class App extends Component<AppProps, AppStates> {
-
+export default class App extends Component {
   render() {
     return (
-      <div className="App" >
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit < code > src / App.js </code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-    </a>
-        </header>
+      <div className="App">
+        <EditableTable
+          columns={Columns}
+          dataSource={DataSource}
+          bordered
+          pagination={false}
+        ></EditableTable>
       </div>
-    )
-  };
+    );
+  }
 }

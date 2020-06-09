@@ -50,6 +50,7 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 // 添加 less 解析规则
 const lessRegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
+const lessOptions = { javascriptEnabled: true }
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -82,7 +83,7 @@ module.exports = function (webpackEnv) {
   const env = getClientEnvironment(publicUrl);
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor) => {
+  const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -120,20 +121,12 @@ module.exports = function (webpackEnv) {
       },
     ].filter(Boolean);
     if (preProcessor) {
-      loaders.push(
-        {
-          loader: require.resolve('resolve-url-loader'),
-          options: {
-            sourceMap: isEnvProduction && shouldUseSourceMap,
-          },
-        },
-        {
-          loader: require.resolve(preProcessor),
-          options: {
-            sourceMap: true,
-          },
-        }
-      );
+      loaders.push({
+        loader: require.resolve(preProcessor),
+        options: Object.assign({
+          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+        }, preProcessorOptions),
+      });
     }
     return loaders;
   };
@@ -499,7 +492,8 @@ module.exports = function (webpackEnv) {
                   importLoaders: 2,
                   sourceMap: isEnvProduction && shouldUseSourceMap,
                 },
-                'less-loader'
+                'less-loader',
+                lessOptions
               ),
               sideEffects: true,
             },
@@ -512,7 +506,8 @@ module.exports = function (webpackEnv) {
                   modules: true,
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
-                'less-loader'
+                'less-loader',
+                lessOptions
               )
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.

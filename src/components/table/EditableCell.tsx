@@ -1,137 +1,124 @@
-import './EditableTable.less'
 import { Component } from "react";
 import React from "react";
-import { Resizable } from 'react-resizable';
+import { Resizable } from "react-resizable";
 import { Row, Input, Col, Form } from "antd";
 import { FormComponentProps, WrappedFormUtils } from "antd/lib/form/Form";
-import { EditableCellProps } from './interface';
+import { EditableCellProps } from "./interface";
 
 const EditableContext = React.createContext("No Data");
 
 export const EditableRow = ({ form, index, ...props }) => (
-    <EditableContext.Provider value={form}>
-        <tr {...props} />
-    </EditableContext.Provider>
+  <EditableContext.Provider value={form}>
+    <tr {...props} />
+  </EditableContext.Provider>
 );
 
-const ResizeableTitle = props => {
-    const { onResize, width, ...restProps } = props;
+const ResizeableTitle = (props) => {
+  const { onResize, width, ...restProps } = props;
 
-    if (!width) {
-        return <th {...restProps} />;
-    }
+  //width应为整数类型
+  if (
+    !width ||
+    !Number.isFinite(width) ||
+    (Number.isFinite(width) && !Number.isInteger(width))
+  ) {
+    return <th {...restProps} />;
+  }
 
-    return (
-        <Resizable
-            width={width}
-            height={0}
-            onResize={onResize}
-            minConstraints={[100, 0]}
-            draggableOpts={{ enableUserSelectHack: false }}
-        >
-            <th {...restProps} >{props.children}</th>
-        </Resizable>
-    );
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      onResize={onResize}
+      minConstraints={[100, 0]}
+      draggableOpts={{ enableUserSelectHack: false }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
 };
 
-export class EditableCell extends Component<EditableCellProps<Object> & FormComponentProps> {
-    private form = this.props.form as WrappedFormUtils;
-    private input: any;
-    constructor(props: EditableCellProps<Object> & FormComponentProps) {
-        super(props);
-        // this.handleClick.bind(this)
-    }
+export class EditableCell extends Component<
+  EditableCellProps<Object> & FormComponentProps
+> {
+  private form = this.props.form as WrappedFormUtils;
+  private input: any;
+  constructor(props: EditableCellProps<Object> & FormComponentProps) {
+    super(props);
+    // this.handleClick.bind(this)
+  }
 
-    state = {
-        editing: this.props.editing,
-    };
+  state = {
+    editing: false,
+  };
 
-    componentWillReceiveProps(nextProps) {
-        const { editing } = nextProps;
-        if (editing) {
-            this.setState({ editing }, () => {
-                if (this.input) {
-                    this.input.focus();
-                    this.input.select();
-                }
-            });
-        } else {
-            this.setState({ editing: editing })
-        }
-    }
+  save = (e) => {
+    const { record, headerSave } = this.props;
+    this.form.validateFields((error, values) => {
+      if (error && error[e.currentTarget.id]) {
+        return;
+      }
+      this.toggleEdit();
+      headerSave && headerSave({ ...record, ...values });
+    });
+  };
 
-    //input保存事件
-    //由回车或失去焦点触发，做非空判断，如果为空弹出提示，不继续往上触发保存方法，并不会将字段值置空
-    save = e => {
-        const { record, handleSave } = this.props;
-        this.form.validateFields((error, values) => {
-            handleSave({ ...record, ...values });
-        });
-    };
+  toggleEdit = () => {
+    const editing = !this.state.editing;
+    this.setState({ editing }, () => {
+      if (editing) {
+        this.input.focus();
+      }
+    });
+  };
 
-    //cell 整个容器的点击事件，暴露出去可在table内控制表格高亮效果，以及业务层可做表头点击事件
-    //封装的此方法仅仅控制高亮，其余涉及表格状态不建议在此处
-    handleHeaderCellClick() {
-        const { record, handleHeaderCellClick } = this.props;
-        handleHeaderCellClick(record)
-    }
+  renderCell = (form) => {
+    this.form = form;
+    const { children, dataIndex, title } = this.props;
+    const { editing } = this.state;
+    return editing ? (
+      <Form.Item style={{ margin: 0 }}>
+        {form.getFieldDecorator(dataIndex, {
+          rules: [
+            {
+              required: true,
+              message: `${title} is required.`,
+            },
+          ],
+          initialValue: title,
+        })(
+          <Input
+            ref={(node) => (this.input = node)}
+            onPressEnter={this.save}
+            onBlur={this.save}
+          />
+        )}
+      </Form.Item>
+    ) : (
+      <div className={"editable-cell-value-wrap"} onClick={this.toggleEdit}>
+        {children}
+      </div>
+    );
+  };
 
-    renderCell = form => {
-        this.form = form;
-        const { editable, children, dataIndex, record, titleName, handleInputEnter, handleToggleEdit } = this.props;
-        const { editing } = this.state;
-        return editing ? (
-            <Form.Item style={{ margin: 0 }}>
-                {form.getFieldDecorator(dataIndex, {
-                    initialValue: titleName,
-                })(<Input ref={node => (this.input = node)} onPressEnter={e => { this.save(e); handleInputEnter() }} onBlur={this.save} />)}
-            </Form.Item>
+  render() {
+    const {
+      dataIndex,
+      title,
+      record,
+      headerSave,
+      children,
+      editable,
+      ...restProps
+    } = this.props;
+    return (
+      <ResizeableTitle {...restProps}>
+        {editable ? (
+          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
         ) : (
-                <div
-                    className={editable ? "editable-cell-value-wrap" : ""}
-                    onClick={() => {editable && handleToggleEdit()}}
-                >
-                    {children}
-                </div>
-            );
-    };
-
-    render() {
-        const {
-            dataIndex,
-            title,
-            record,
-            index,
-            handleSave,
-            children,
-            headerRight,
-            showHeaderRight,
-            handleHeaderCellClick,
-            titleName,
-            handleInputEnter,
-            handleToggleEdit,
-            editing,
-            editable,
-            enterFocus,
-            ...restProps
-        } = this.props;
-        return (
-            <ResizeableTitle {...restProps}>
-                <Row className="table-thead-title" type="flex" align='middle' justify='space-between' onClick={() => this.handleHeaderCellClick()}>
-                    <Col style={{ flex: 1 }}>
-                        {
-                            enterFocus ?
-                            <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer> :
-                            children
-                        }
-                    </Col>
-                    {showHeaderRight && !editing &&
-                        <Col>
-                            {headerRight}
-                        </Col>
-                    }
-                </Row>
-            </ResizeableTitle >
-        );
-    }
+          children
+        )}
+      </ResizeableTitle>
+    );
+  }
 }

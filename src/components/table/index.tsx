@@ -1,5 +1,5 @@
-import EditableTable from './EditableTable'
+import { EditableTable } from "./EditableTable";
 
-export * from './interface'
+export * from "./interface";
 
 export default EditableTable;
