@@ -1,11 +1,11 @@
 import { Component } from "react";
 import React from "react";
 import { Resizable } from "react-resizable";
-import { Row, Input, Col, Form } from "antd";
+import { Input, Form } from "antd";
 import { FormComponentProps, WrappedFormUtils } from "antd/lib/form/Form";
-import { EditableCellProps } from "./interface";
+import { EditableCellProps, EditableCellState } from "./interface";
 
-const EditableContext = React.createContext("No Data");
+const EditableContext = React.createContext({});
 
 export const EditableRow = ({ form, index, ...props }) => (
   <EditableContext.Provider value={form}>
@@ -14,7 +14,13 @@ export const EditableRow = ({ form, index, ...props }) => (
 );
 
 const ResizeableTitle = (props) => {
-  const { onResize, width, ...restProps } = props;
+  const {
+    onResize,
+    width,
+    minConstraints,
+    maxConstraints,
+    ...restProps
+  } = props;
 
   //width应为整数类型
   if (
@@ -30,7 +36,8 @@ const ResizeableTitle = (props) => {
       width={width}
       height={0}
       onResize={onResize}
-      minConstraints={[100, 0]}
+      minConstraints={minConstraints}
+      maxConstraints={maxConstraints}
       draggableOpts={{ enableUserSelectHack: false }}
     >
       <th {...restProps} />
@@ -39,27 +46,31 @@ const ResizeableTitle = (props) => {
 };
 
 export class EditableCell extends Component<
-  EditableCellProps<Object> & FormComponentProps
+  EditableCellProps<Object> & FormComponentProps,
+  EditableCellState
 > {
   private form = this.props.form as WrappedFormUtils;
   private input: any;
   constructor(props: EditableCellProps<Object> & FormComponentProps) {
     super(props);
-    // this.handleClick.bind(this)
+    this.state = {
+      editing: false,
+    };
   }
 
-  state = {
-    editing: false,
-  };
-
   save = (e) => {
-    const { record, headerSave } = this.props;
+    const {
+      record,
+      record: { headerSave },
+      index,
+    } = this.props;
+    console.log("props", this.props);
     this.form.validateFields((error, values) => {
       if (error && error[e.currentTarget.id]) {
         return;
       }
       this.toggleEdit();
-      headerSave && headerSave({ ...record, ...values });
+      headerSave && headerSave({ ...record, ...values, index });
     });
   };
 
@@ -82,7 +93,7 @@ export class EditableCell extends Component<
           rules: [
             {
               required: true,
-              message: `${title} is required.`,
+              message: `Column title is required.`,
             },
           ],
           initialValue: title,

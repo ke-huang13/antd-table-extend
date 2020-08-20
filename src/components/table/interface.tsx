@@ -1,27 +1,23 @@
 import { ColumnProps, TableProps } from "antd/es/table";
 
-export interface EditableCellProps<Object> extends ColumnProps<Object> {
-    record?: {},
-    /**表头保存方法 */
-    headerSave?: (row: any) => void,
-    //设置表头是否可单击字段名编辑
-    editable?: boolean,
+export interface EditableCellProps<T> extends ColumnProps<T> {
+  record?: EditableCellProps<T>;
+  /**表头保存方法 */
+  headerSave?: (row: any) => void;
+  /**设置表头是否可单击字段名编辑 */
+  editable?: boolean;
+  /**可伸缩的最小距离 */
+  minConstraints?: [number, number];
+  /**可伸缩的最大距离 */
+  maxConstraints?: [number, number];
+  /**表格列索引 */
+  index?: number;
 }
 
-// export class EditableTableProps implements TableProps<Object> {
-//     /**字段名信息唯一标识 */
-//     columns?: EditableCellProps<Object>[];
-//     //表格数据源
-//     dataSource?: Object[];
-// }
+export interface EditableCellState {
+  editing: boolean;
+}
 
-// export class EditableTableStore {
-
-//     tableColumns: EditableCellProps<Object>[] = [];
-
-//     tableDataSource: Object[] = [];
-
-//     handleResize = index => (e, { size }) => {
-//         this.tableColumns[index].width = size.width;
-//     }
-// }
+export interface EditableTableState<T> {
+  tableColumns: EditableCellProps<T>[];
+}

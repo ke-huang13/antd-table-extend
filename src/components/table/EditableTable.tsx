@@ -2,16 +2,11 @@ import { Component } from "react";
 import React from "react";
 import { Table, Form } from "antd";
 import { EditableCell, EditableRow } from "./EditableCell";
-import { TableProps, ColumnProps } from "antd/lib/table/interface";
+import { TableProps } from "antd/lib/table/interface";
 import "./style/index.less";
-import { EditableCellProps } from "./interface";
+import { EditableTableState, EditableCellProps } from "./interface";
 
 const EditableFormRow = Form.create()(EditableRow);
-
-interface EditableTableState<T> {
-  tableDataSource: T[];
-  tableColumns: EditableCellProps<T>[];
-}
 
 export class EditableTable<T> extends Component<
   TableProps<T>,
@@ -19,16 +14,14 @@ export class EditableTable<T> extends Component<
 > {
   constructor(props: TableProps<T>) {
     super(props);
-    const { dataSource, columns } = this.props;
+    const { columns } = this.props;
     this.state = {
-      tableDataSource: dataSource,
       tableColumns: columns,
     };
   }
 
   componentWillReceiveProps(nextProp) {
     this.setState({
-      tableDataSource: nextProp.dataSource,
       tableColumns: nextProp.columns,
     });
   }
@@ -45,10 +38,9 @@ export class EditableTable<T> extends Component<
   };
 
   render() {
-    const { tableDataSource } = this.state;
     const tableColumns = this.state.tableColumns.map((col, index) => ({
       ...col,
-      onHeaderCell: (column) => ({
+      onHeaderCell: (column: EditableCellProps<T>) => ({
         width: column.width,
         onResize: this.handleResize(index),
         record: column,
@@ -56,6 +48,9 @@ export class EditableTable<T> extends Component<
         dataIndex: col.dataIndex,
         title: col.title,
         headerSave: column.headerSave,
+        minConstraints: column.minConstraints,
+        maxConstraints: column.maxConstraints,
+        index
       }),
     }));
     const components = {
@@ -64,46 +59,10 @@ export class EditableTable<T> extends Component<
         cell: EditableCell,
       },
     };
-    const { columns, dataSource, ...restProps } = this.props;
-
-    // const tableColumns = this.store.tableColumns.map((col, colIndex) => {
-    //   return {
-    //     ...col,
-    //     onHeaderCell: (record) => ({
-    //       record,
-    //       width: record.width,
-    //       editable: col.editable,
-    //       dataIndex: col.dataIndex,
-    //       title: col.title,
-    //       titleName: col.titleName,
-    //       handleSave: this.store.handleSave,
-    //       onResize: this.store.handleResize(colIndex),
-    //       handleHeaderCellClick: () => {
-    //         this.store.handleCellClick(-1, colIndex);
-    //       },
-    //       showHeaderRight: col.showHeaderRight,
-    //       headerRight: col.headerRight
-    //         ? col.headerRight(record, colIndex)
-    //         : undefined,
-    //       handleInputEnter: () => {
-    //         this.store.handleInputEnter(colIndex);
-    //       },
-    //       handleToggleEdit: () => {
-    //         this.store.handleToggleEdit(colIndex);
-    //       },
-    //       editing: col.editing == undefined ? false : col.editing,
-    //       enterFocus: col.enterFocus == undefined ? false : col.enterFocus,
-    //     }),
-    //   };
-    // });
+    const { columns, ...restProps } = this.props;
 
     return (
-      <Table
-        components={components}
-        dataSource={tableDataSource}
-        columns={tableColumns}
-        {...restProps}
-      />
+      <Table components={components} columns={tableColumns} {...restProps} />
     );
   }
 }
