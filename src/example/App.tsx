@@ -53,7 +53,6 @@ export default class App extends Component<{}, { column: object[] }> {
   }
 
   headerSave = (row: any) => {
-    console.log(row);
     const { dataIndex, index } = row;
     // const { column } = this.state;
     this.setState(({ column }) => {

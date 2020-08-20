@@ -64,7 +64,6 @@ export class EditableCell extends Component<
       record: { headerSave },
       index,
     } = this.props;
-    console.log("props", this.props);
     this.form.validateFields((error, values) => {
       if (error && error[e.currentTarget.id]) {
         return;
