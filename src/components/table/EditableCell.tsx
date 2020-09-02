@@ -124,8 +124,9 @@ export class EditableCell extends Component<
         });
     };
 
-    renderCell = (form) => {
+    renderCell = ({form}) => {
         this.form = form;
+        debugger
         const { children, dataIndex, title } = this.props;
         const { editing } = this.state;
         return editing ? (
