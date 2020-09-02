@@ -4,7 +4,11 @@ import { Table, Form } from "antd";
 import { EditableCell, EditableRow } from "./EditableCell";
 import { TableProps } from "antd/lib/table/interface";
 import "./style/index.less";
-import { EditableTableState, EditableCellProps, EditableTableProps } from "./interface";
+import {
+    EditableTableState,
+    EditableCellProps,
+    EditableTableProps,
+} from "./interface";
 import { DragDropContext } from "react-beautiful-dnd";
 
 const EditableFormRow = Form.create()(EditableRow);
@@ -18,6 +22,7 @@ export class EditableTable<T> extends Component<
         const { columns } = this.props;
         this.state = {
             tableColumns: columns,
+            destinationIndex: -1,
         };
     }
 
@@ -42,6 +47,7 @@ export class EditableTable<T> extends Component<
      * 拖拽结束
      */
     onDragEnd = (result) => {
+        this.setState({ destinationIndex: -1 });
         // dropped outside the list
         if (!result.destination) {
             return;
@@ -52,7 +58,17 @@ export class EditableTable<T> extends Component<
             handleDragEnd(result.source.index, result.destination.index);
     };
 
+    /**
+     * 拖拽更新
+     */
+    onDragUpdate = (initial) => {
+        // console.log(initial)
+        if (!initial.destination) return;
+        this.setState({ destinationIndex: initial.destination.index });
+    };
+
     render() {
+        const {destinationIndex} = this.state;
         const tableColumns = this.state.tableColumns.map((col, index) => ({
             ...col,
             onHeaderCell: (column: EditableCellProps<T>) => ({
@@ -77,10 +93,14 @@ export class EditableTable<T> extends Component<
         const { columns, ...restProps } = this.props;
 
         return (
-            <DragDropContext onDragEnd={this.onDragEnd}>
+            <DragDropContext
+                onDragEnd={this.onDragEnd}
+                onDragUpdate={this.onDragUpdate}
+            >
                 <Table
                     components={components}
                     columns={tableColumns}
+                    onHeaderRow={() => ({ destinationIndex })}
                     {...restProps}
                 />
             </DragDropContext>

@@ -20,6 +20,7 @@ export interface EditableCellState {
 
 export interface EditableTableState<T> {
     tableColumns: EditableCellProps<T>[];
+    destinationIndex: number;
 }
 
 export interface EditableTableProps<T> extends TableProps<T> {

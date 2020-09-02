@@ -13,21 +13,51 @@ import {
     DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 
-const EditableContext = React.createContext({});
+const EditableContext = React.createContext({
+    form: {},
+    snapshot: {},
+    destinationIndex: -1,
+});
 
-export const EditableRow = ({ form, index, ...props }) => (
+export const EditableRow = ({ form, destinationIndex, ...props }) => (
     <Droppable droppableId="droppable" direction="horizontal">
         {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-            <EditableContext.Provider value={{ form, snapshot }}>
+            <EditableContext.Provider
+                value={{ form, snapshot, destinationIndex }}
+            >
                 <tr
                     {...props}
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                />
+                >
+                    {props.children}
+                    {provided.placeholder}
+                </tr>
             </EditableContext.Provider>
         )}
     </Droppable>
 );
+
+const getItemStyle = (
+    draggableSnapshot,
+    provided,
+    start,
+    end,
+    index
+): React.CSSProperties => {
+    console.log(index, end);
+    if (draggableSnapshot.isDragging) {
+        return { ...provided.draggableProps.style };
+    } else if (index == end) {
+        if (start < end) {
+            return { borderRight: "2px dashed #025BDE" };
+        } else if (start > end) {
+            return { borderLeft: "2px dashed #025BDE" };
+        }
+        return {};
+    }
+    return {};
+};
 
 const ResizeableTitle = (props) => {
     const {
@@ -37,6 +67,7 @@ const ResizeableTitle = (props) => {
         maxConstraints,
         provided,
         draggableSnapshot,
+        index,
         ...restProps
     } = props;
 
@@ -63,27 +94,43 @@ const ResizeableTitle = (props) => {
     }
 
     return (
-        <Resizable
-            width={width}
-            height={0}
-            onResize={onResize}
-            minConstraints={minConstraints}
-            maxConstraints={maxConstraints}
-            draggableOpts={{ enableUserSelectHack: false }}
-        >
-            <th
-                {...restProps}
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                style={
-                    draggableSnapshot.isDragging
-                        ? {
-                              ...provided.draggableProps.style,
-                          }
-                        : {}
-                }
-            />
-        </Resizable>
+        <EditableContext.Consumer>
+            {({ snapshot, destinationIndex }) => {
+                console.log("destinationIndex", destinationIndex);
+                const start = parseInt(
+                    (snapshot as DroppableStateSnapshot).draggingFromThisWith
+                );
+                const end =
+                    destinationIndex == undefined ? start : destinationIndex;
+                console.log("snapshot", snapshot);
+
+                console.log("start", start);
+                console.log("end", end);
+                return (
+                    <Resizable
+                        width={width}
+                        height={0}
+                        onResize={onResize}
+                        minConstraints={minConstraints}
+                        maxConstraints={maxConstraints}
+                        draggableOpts={{ enableUserSelectHack: false }}
+                    >
+                        <th
+                            {...restProps}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            style={getItemStyle(
+                                draggableSnapshot,
+                                provided,
+                                start,
+                                end,
+                                index
+                            )}
+                        />
+                    </Resizable>
+                );
+            }}
+        </EditableContext.Consumer>
     );
 };
 
@@ -124,9 +171,8 @@ export class EditableCell extends Component<
         });
     };
 
-    renderCell = ({form}) => {
+    renderCell = ({ form }) => {
         this.form = form;
-        debugger
         const { children, dataIndex, title } = this.props;
         const { editing } = this.state;
         return editing ? (
@@ -169,7 +215,7 @@ export class EditableCell extends Component<
             ...restProps
         } = this.props;
         return (
-            <Draggable key={dataIndex} draggableId={dataIndex} index={index}>
+            <Draggable key={dataIndex} draggableId={index + ""} index={index}>
                 {(
                     provided: DraggableProvided,
                     snapshot: DraggableStateSnapshot
@@ -178,6 +224,7 @@ export class EditableCell extends Component<
                         {...restProps}
                         provided={provided}
                         draggableSnapshot={snapshot}
+                        index={index}
                     >
                         <Row type="flex" align="middle">
                             <Col
