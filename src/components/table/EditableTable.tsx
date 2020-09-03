@@ -19,29 +19,10 @@ export class EditableTable<T> extends Component<
 > {
     constructor(props: TableProps<T>) {
         super(props);
-        const { columns } = this.props;
         this.state = {
-            tableColumns: columns,
             destinationIndex: -1,
         };
     }
-
-    componentWillReceiveProps(nextProp) {
-        this.setState({
-            tableColumns: nextProp.columns,
-        });
-    }
-
-    handleResize = (index) => (e, { size }) => {
-        this.setState(({ tableColumns }) => {
-            const nextColumns = [...tableColumns];
-            nextColumns[index] = {
-                ...nextColumns[index],
-                width: size.width,
-            };
-            return { tableColumns: nextColumns };
-        });
-    };
 
     /**
      * 拖拽结束
@@ -67,14 +48,14 @@ export class EditableTable<T> extends Component<
     };
 
     render() {
-        const {destinationIndex} = this.state;
-        const tableColumns = this.state.tableColumns.map((col, index) => ({
+        const { destinationIndex } = this.state;
+        const tableColumns = this.props.columns.map((col, index) => ({
             ...col,
             onHeaderCell: (column: EditableCellProps<T>) => ({
                 width: column.width,
-                onResize: this.handleResize(index),
+                onResize: column.handleResize ? column.handleResize(index) :undefined,
                 record: column,
-                editable: col.editable,
+                editable: column.editable,
                 dataIndex: col.dataIndex,
                 title: col.title,
                 headerSave: column.headerSave,

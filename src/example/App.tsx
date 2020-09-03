@@ -19,7 +19,8 @@ export default class App extends Component<
                     width: 200,
                     editable: true,
                     headerSave: this.headerSave,
-                    minConstraints: [100, 0],
+                    handleResize: this.handleResize,
+                    minConstraints: [200, 0],
                 },
                 {
                     title: "age",
@@ -27,6 +28,7 @@ export default class App extends Component<
                     width: 200,
                     editable: true,
                     headerSave: this.headerSave,
+                    handleResize: this.handleResize,
                 },
                 {
                     title: "address",
@@ -34,6 +36,7 @@ export default class App extends Component<
                     width: 200,
                     editable: true,
                     headerSave: this.headerSave,
+                    handleResize: this.handleResize,
                 },
                 {
                     title: "operation",
@@ -95,6 +98,18 @@ export default class App extends Component<
         result.splice(key, 1);
         this.setState({ dataSource: result });
     }
+
+    handleResize = (index) => (e, { size }) => {
+      console.log(index)
+        this.setState(({ column }) => {
+            const nextColumns = [...column];
+            nextColumns[index] = {
+                ...nextColumns[index],
+                width: size.width,
+            };
+            return { column: nextColumns };
+        });
+    };
 
     render() {
         const { column, dataSource } = this.state;

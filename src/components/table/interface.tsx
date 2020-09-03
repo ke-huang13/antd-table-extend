@@ -2,8 +2,6 @@ import { ColumnProps, TableProps } from "antd/es/table";
 
 export interface EditableCellProps<T> extends ColumnProps<T> {
     record?: EditableCellProps<T>;
-    /**表头保存方法 */
-    headerSave?: (row: any) => void;
     /**设置表头是否可单击字段名编辑 */
     editable?: boolean;
     /**可伸缩的最小距离 */
@@ -12,6 +10,11 @@ export interface EditableCellProps<T> extends ColumnProps<T> {
     maxConstraints?: [number, number];
     /**表格列索引 */
     index?: number;
+    /**表头保存方法 */
+    headerSave?: (row: any) => void;
+    //传递width参数，必须实现handleResize方法，否则无拖动效果
+    /**表头拖动方法 */
+    handleResize?: (index) => void;
 }
 
 export interface EditableCellState {
@@ -19,7 +22,6 @@ export interface EditableCellState {
 }
 
 export interface EditableTableState<T> {
-    tableColumns: EditableCellProps<T>[];
     destinationIndex: number;
 }
 
