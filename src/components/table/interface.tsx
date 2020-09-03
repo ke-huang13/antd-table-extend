@@ -15,6 +15,8 @@ export interface EditableCellProps<T> extends ColumnProps<T> {
     //传递width参数，必须实现handleResize方法，否则无拖动效果
     /**表头拖动方法 */
     handleResize?: (index) => void;
+    /**字段是否可拖动 */
+    isDragDisabled?: boolean;
 }
 
 export interface EditableCellState {

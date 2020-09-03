@@ -41,6 +41,7 @@ export default class App extends Component<
                 {
                     title: "operation",
                     dataIndex: "operation",
+                    isDragDisabled: true,
                     render: (text, record) => (
                         <Button
                             type="primary"
@@ -100,7 +101,7 @@ export default class App extends Component<
     }
 
     handleResize = (index) => (e, { size }) => {
-      console.log(index)
+        console.log(index);
         this.setState(({ column }) => {
             const nextColumns = [...column];
             nextColumns[index] = {

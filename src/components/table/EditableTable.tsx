@@ -62,6 +62,7 @@ export class EditableTable<T> extends Component<
                 minConstraints: column.minConstraints,
                 maxConstraints: column.maxConstraints,
                 index,
+                isDragDisabled:column.isDragDisabled
             }),
         }));
         const components = {

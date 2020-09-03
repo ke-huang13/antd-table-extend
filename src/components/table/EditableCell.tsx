@@ -31,7 +31,7 @@ export const EditableRow = ({ form, destinationIndex, ...props }) => (
                     ref={provided.innerRef}
                 >
                     {props.children}
-                    {provided.placeholder}
+                    {/* {provided.placeholder} */}
                 </tr>
             </EditableContext.Provider>
         )}
@@ -206,10 +206,11 @@ export class EditableCell extends Component<
             children,
             editable,
             index,
+            isDragDisabled = false,
             ...restProps
         } = this.props;
         return (
-            <Draggable key={dataIndex} draggableId={index + ""} index={index}>
+            <Draggable key={dataIndex} draggableId={index + ""} index={index} isDragDisabled={isDragDisabled}>
                 {(
                     provided: DraggableProvided,
                     snapshot: DraggableStateSnapshot
