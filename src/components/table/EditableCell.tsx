@@ -45,7 +45,6 @@ const getItemStyle = (
     end,
     index
 ): React.CSSProperties => {
-    console.log(index, end);
     if (draggableSnapshot.isDragging) {
         return { ...provided.draggableProps.style };
     } else if (index == end) {
@@ -96,16 +95,11 @@ const ResizeableTitle = (props) => {
     return (
         <EditableContext.Consumer>
             {({ snapshot, destinationIndex }) => {
-                console.log("destinationIndex", destinationIndex);
                 const start = parseInt(
                     (snapshot as DroppableStateSnapshot).draggingFromThisWith
                 );
                 const end =
                     destinationIndex == undefined ? start : destinationIndex;
-                console.log("snapshot", snapshot);
-
-                console.log("start", start);
-                console.log("end", end);
                 return (
                     <Resizable
                         width={width}

@@ -1,22 +1,14 @@
 import React, { Component } from "react";
 import EditableTable from "../components/table";
-
-const DataSource = [
-    {
-        key: "0",
-        name: "Edward King 0",
-        age: "32",
-        address: "London, Park Lane no. 0",
-    },
-    {
-        key: "1",
-        name: "Edward King 1",
-        age: "32",
-        address: "London, Park Lane no. 1",
-    },
-];
-
-export default class App extends Component<{}, { column: object[] }> {
+import { Button } from "antd";
+/**
+ * 示例代码
+ * state可根据情况完善类型
+ */
+export default class App extends Component<
+    {},
+    { column: object[]; dataSource: object[] }
+> {
     constructor(props) {
         super(props);
         this.state = {
@@ -46,7 +38,30 @@ export default class App extends Component<{}, { column: object[] }> {
                 {
                     title: "operation",
                     dataIndex: "operation",
-                    render: (text, record) => <span>delete</span>,
+                    render: (text, record) => (
+                        <Button
+                            type="primary"
+                            onClick={() => {
+                                this.handleDelete(record.key);
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    ),
+                },
+            ],
+            dataSource: [
+                {
+                    key: "0",
+                    name: "Edward King 0",
+                    age: "32",
+                    address: "London, Park Lane no. 0",
+                },
+                {
+                    key: "1",
+                    name: "Edward King 1",
+                    age: "32",
+                    address: "London, Park Lane no. 1",
                 },
             ],
         };
@@ -74,13 +89,20 @@ export default class App extends Component<{}, { column: object[] }> {
         this.setState({ column: result });
     };
 
+    handleDelete(key) {
+        const { dataSource } = this.state;
+        const result = Array.from(dataSource);
+        result.splice(key, 1);
+        this.setState({ dataSource: result });
+    }
+
     render() {
-        const { column } = this.state;
+        const { column, dataSource } = this.state;
         return (
             <div className="App">
                 <EditableTable
                     columns={column}
-                    dataSource={DataSource}
+                    dataSource={dataSource}
                     bordered
                     pagination={false}
                     handleDragEnd={this.handleDragEnd}

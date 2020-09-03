@@ -62,7 +62,6 @@ export class EditableTable<T> extends Component<
      * 拖拽更新
      */
     onDragUpdate = (initial) => {
-        // console.log(initial)
         if (!initial.destination) return;
         this.setState({ destinationIndex: initial.destination.index });
     };
