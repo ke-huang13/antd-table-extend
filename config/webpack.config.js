@@ -322,6 +322,26 @@ module.exports = function (webpackEnv) {
       rules: [
         // Disable require.ensure as it's not a standard language feature.
         { parser: { requireEnsure: false } },
+
+        // First, run the linter.
+        // It's important to do this before Babel processes the JS.
+        {
+          test: /\.(js|mjs|jsx|ts|tsx)$/,
+          enforce: 'pre',
+          use: [
+            {
+              options: {
+                cache: true,
+                formatter: require.resolve('react-dev-utils/eslintFormatter'),
+                eslintPath: require.resolve('eslint'),
+                resolvePluginsRelativeTo: __dirname,
+
+              },
+              loader: require.resolve('eslint-loader'),
+            },
+          ],
+          include: paths.appSrc,
+        },
         {
           // "oneOf" will traverse all following loaders until one will
           // match the requirements. When no loader matches it will fall
@@ -429,6 +449,40 @@ module.exports = function (webpackEnv) {
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
               }),
+            },
+            // Opt-in support for SASS (using .scss or .sass extensions).
+            // By default we support SASS Modules with the
+            // extensions .module.scss or .module.sass
+            {
+              test: sassRegex,
+              exclude: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                },
+                'sass-loader'
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
+            },
+            // Adds support for CSS Modules, but using SASS
+            // using the extension .module.scss or .module.sass
+            {
+              test: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  modules: {
+                    getLocalIdent: getCSSModuleLocalIdent,
+                  },
+                },
+                'sass-loader'
+              ),
             },
             {
               test: lessRegex,

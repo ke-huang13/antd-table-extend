@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import EditableTable from "../src";
+import EditableTable from "../table";
 import { Button } from "antd";
 /**
  * 示例代码

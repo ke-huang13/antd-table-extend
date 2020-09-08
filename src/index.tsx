@@ -1,5 +1,5 @@
-import { EditableTable } from "./EditableTable";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './example/App';
 
-export * from "./interface";
-
-export default EditableTable;
+ReactDOM.render(<App />, document.getElementById('root'));

@@ -23,6 +23,6 @@
     "noImplicitAny":false,
   },
   "include": [
-    "src", "example",
+    "src", "src/example",
   ]
 }
