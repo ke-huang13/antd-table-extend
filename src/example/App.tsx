@@ -8,7 +8,7 @@ import { Button } from "antd";
 export default class App extends Component<
     {},
     { column: object[]; dataSource: object[] }
-> {
+    > {
     constructor(props) {
         super(props);
         this.state = {
@@ -101,7 +101,6 @@ export default class App extends Component<
     }
 
     handleResize = (index) => (e, { size }) => {
-        console.log(index);
         this.setState(({ column }) => {
             const nextColumns = [...column];
             nextColumns[index] = {
